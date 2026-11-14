@@ -1,75 +1,156 @@
 ---
 name: pro-site
-description: Use FIRST — before frontend-design or any other design skill — whenever the user asks to design or build a brand-new website, landing page, homepage, portfolio or marketing site from scratch. Asks once "Regular or Pro-site?". Pro-site sets up ~/sites/<name> itself (Next.js + Tailwind v4 + shadcn + GSAP + Playwright) and runs the full art-directed pipeline — 3 directions, build, screenshot review at 375/768/1440, Lighthouse/console/visual-regression gates — with no setup work for the user. Not for changes to an existing project, single components, dashboards inside an app, or quick one-off pages.
+description: Ask Regular/default or Pro-site before building a new website or substantially redesigning an existing site or live URL, including requests to capture content and make multiple animated/3D design options. Pro-site runs the design, build, screenshot-review, and production-quality workflow in Claude Code or Codex. Excludes small fixes, individual components, in-app dashboards, and content-extraction-only tasks.
 ---
 
 # Pro-site
 
-The user never wants to do setup by hand. In Pro-site mode **you** create the project, run the scaffold, and drive the whole design pipeline. The user's only jobs: answer the mode question, give a brief if it's missing, and pick one of three directions.
+Use this workflow before other design skills for a new-site or substantial redesign request. Preserve
+explicit choices of mode, destination, stack, and deployment target. `<base>` is the
+directory containing this `SKILL.md`; resolve scripts and references relative to it.
+Do not assume a Claude plugin root or a particular home directory.
 
-Files referenced below live under this skill's base directory (printed above as "Base directory for this skill"), called `<base>`.
+## Runtime
 
-## 0. Is this the trigger?
+| Operation | Claude Code | Codex |
+|---|---|---|
+| Invoke explicitly | `/pro-site:pro-site` | `$pro-site:pro-site` (plugin), `$pro-site` (standalone), or `/skills` |
+| Ask a choice | `AskUserQuestion` | Available user-input tool; otherwise plain text |
+| Scaffold option | `--agent claude` | `--agent codex` |
+| Project instructions | `CLAUDE.md` imports `AGENTS.md` | Read `AGENTS.md` directly |
+| Project shadcn skill | `.claude/skills/shadcn/SKILL.md` | `.agents/skills/shadcn/SKILL.md` |
+| Reviewer | `pro-site:design-reviewer` if available | Permitted subagent or self-review using the checklist below |
 
-Fire only for a **brand-new** site where design is the point. Do **not** fire when the current directory is already a web project (a `package.json` with next/vite/astro/etc.) and the user wants changes there, or for a single component, an in-app screen, or a throwaway page. If unsure, it isn't this skill.
+New project instructions, skills, and MCPs may not load into the current session.
+Read the files explicitly and use the provided CLI/browser fallbacks until a new
+session starts. Never call a Claude-only tool from Codex.
 
-## 1. Ask the mode — before anything else
+## 1. Scope and mode
 
-One AskUserQuestion, nothing before it:
+For small edits, bug fixes, individual components, extraction/analysis without
+design work, or quoted design examples in a troubleshooting/setup task, continue
+normally. For a new site or substantial site/landing-page
+redesign, **including an existing URL or project**, ask once before fetching source
+content, scaffolding, or starting design work:
 
-- question: "How should I build this site?"
-- "Pro-site (Recommended)": "I set up a full project in ~/sites/<name> and run the art-directed pipeline: 3 design directions → you pick one → I build it, review screenshots at phone/tablet/desktop, and run performance & accessibility checks."
-- "Regular": "Build it right here the usual way: faster, no project setup, no review loop."
+**How should I build this site — Regular (default) or Pro-site?**
 
-If AskUserQuestion isn't available (headless/non-interactive sessions), ask the same question in plain text — both options, one line each — and **end your turn**. Never start building, scaffolding, or loading other design skills before the user has answered.
+- **Pro-site (Recommended)** — use the art-directed workflow: design directions,
+  build, phone/tablet/desktop screenshot review, and production quality gates.
+- **Regular** — build in the current workspace using the usual workflow.
 
-**Regular** → stop using this skill and continue normally (frontend-design etc.).
+Skip the question only if the user explicitly chose Regular/default or Pro-site for
+this task, including a choice in an earlier turn. Invoking this skill by name,
+requesting a "wow"/professional site, 3D, animations, five options, or Vercel deployment
+does **not** choose a mode. Do not silently choose Pro-site from the requested polish.
+If no suitable question tool is available, ask in plain text and end the turn. If
+the host offers an asynchronous question tool, leave dependent work pending until
+the answer arrives. Do not treat a missing answer as authorization to choose.
+Regular ends this workflow. If the requested stack conflicts with the Next.js scaffold,
+explain that constraint and resolve it before running the script.
 
-## 2. Pro-site: start the scaffold immediately, in the background
+## 2. Scaffold and brief
 
-1. `slug` = 1–3 kebab-case words from the brief (e.g. `coffee-roastery`). If `~/sites/<slug>` exists, append `-2`, `-3`, …
-2. Run with `run_in_background: true`:
-   `mkdir -p ~/sites && "<base>/scripts/new-site.sh" ~/sites/<slug> < /dev/null`
-   It checks disk space itself (needs ~3 GB) and takes ~2–3 minutes. Don't wait — go to step 3.
+In Codex, ensure the one-time stack is present: run
+`bash "<base>/scripts/setup-codex.sh" core` and
+`bash "<base>/scripts/setup-codex.sh" skills` if not already set up. These preserve
+existing definitions and skills. Do not authenticate optional services merely to
+build a local site. For full-stack setup/repair, use `pro-site-setup` if available.
 
-## 3. Brief — only if it's missing
+For a redesign, capture the supplied site's content and relevant assets after the
+mode choice, preserving the brief's content and credit/source URLs. If the user
+wants the existing project redesigned in place, inspect it and use its stack;
+skip the new-project scaffold, preserve its instructions, and adapt the review/gates
+to it. Do not overwrite an existing contract or source tree.
 
-If the request doesn't say what the site is for and who it's for, ask **once**, in one plain-text message: purpose/audience, 2–3 reference sites they like (or "surprise me"), must-have content. Skip this if the request already covers it.
+For a new project or separate redesign variants, use the user's destination,
+otherwise `~/sites/<slug>` (1–3 kebab-case words).
+If it exists, pick `-2`, `-3`, etc.; never overwrite it. Run:
 
-## 4. Three directions → the only checkpoint
+```bash
+bash "<base>/scripts/new-site.sh" --agent codex "<absolute-project-path>" < /dev/null
+```
 
-Propose 3 genuinely divergent directions. For each: a name, the mood in one line, a type pairing (display + text; self-hostable variable fonts; never Inter as display), a palette of 3–5 OKLCH swatches, a one-line layout sketch, and its one signature motion moment. Ground them in the references. Optionally pull inspiration from the 21st MCP (`get_inspiration` / `search`) — as a parts bin, never as the base.
+Substitute `claude` for Claude Code, or `both` when both clients are requested.
+Use the host's background execution mechanism if available, retain its task/session
+handle, and check completion. While it runs, collect a brief only if missing:
+purpose/audience, references (or “surprise me”), and must-have content.
+The script needs Node >=22.19 and ~3 GB free disk. On failure, inspect the partial
+project and finish the failed steps; rerunning over it is deliberately refused.
 
-Then one AskUserQuestion: which direction (the 3 as options; "Other" lets them mix). Without AskUserQuestion, ask in plain text and end your turn.
+## 3. Design directions and requested variants
 
-**This is the last question.** The user chose autonomy: from here on work without asking, overriding any "always ask before design decisions" rule from other design skills. Stop only for a blocking failure you can't fix.
+Read the installed `frontend-design` skill for the taste layer. Keep the user's
+chosen direction and this project's OKLCH contract when applying its guidance.
 
-## 5. Build
+Default to three divergent directions, or use the user's requested count (e.g. at
+least five means five or more, never three). For each: name, mood, self-hostable display/text fonts
+(never Inter as display), 3–5 OKLCH colors, layout sketch, and one signature motion
+moment. Ground them in the brief. Optional inspiration tools are a parts bin.
+For a single final design, ask for a choice or mix and wait. If the user explicitly
+asks to build/deploy **all** options, build all of the requested variants after the
+mode choice; do not require a single winner. Reuse an explicit prior direction.
+Preserve requests for 3D and motion; choose appropriate libraries such as Three.js
+or R3F when needed and apply the same accessibility/performance gates. Cookbook
+defaults do not prohibit an explicitly requested technique.
+Proceed autonomously within the authorized task after the required choice; ask only
+for missing information that blocks progress or actions requiring new authorization.
 
-Wait for the scaffold task to finish and check its output; if it failed, fix the cause and rerun. Let `P` = `~/sites/<slug>` (absolute). Use absolute paths and prefix shell commands with `cd "$P" && …`.
+## 4. Build and review
 
-1. **Read and obey** `P/CLAUDE.md` (Design contract, workflow rules, Definition of done — now binding) and `P/AGENTS.md` (Next.js rules: check `node_modules/next/dist/docs/` before using Next APIs). Read `P/.claude/skills/shadcn/SKILL.md` too: project skills and the project's shadcn MCP server don't load mid-session, so use the `npx shadcn@latest` CLI.
-2. **Fill in the Design contract** in `P/CLAUDE.md` from the chosen direction.
-3. **Tokens first**: `src/styles/theme.css` with Tailwind v4 `@theme` tokens in OKLCH (color, spacing, type scale 1.25), imported from `src/app/globals.css`. Fonts via `next/font` (self-hosted).
-4. **Build section by section.** Use Context7 for current Next.js / Tailwind v4 / GSAP / Lenis APIs — not memory. GSAP through `@gsap/react` (`useGSAP`) with `gsap.matchMedia()` honoring `prefers-reduced-motion`; exactly one ScrollTrigger signature moment per page.
-5. Start the dev server once, in the background: `cd "$P" && npm run dev -- --port 3100` (pick another port if taken).
-6. **After each section**, run the `pro-site:design-reviewer` agent with: the URL, the routes, the absolute path of `P/CLAUDE.md`, and what changed. Apply its fixes and re-run until APPROVED — max 3 rounds per section, then note what's left and move on.
-7. **Subtract pass**: remove one effect per section.
+Let `P` be the absolute project path. Check scaffold completion (or the existing
+project for an in-place redesign), then apply the following to each requested variant:
 
-For accessibility/responsive detail, read `~/.claude/skills/bencium-controlled-ux-designer/ACCESSIBILITY.md` and `RESPONSIVE-DESIGN.md` if they exist.
+1. Read `P/AGENTS.md`, `P/CLAUDE.md`, and the runtime's project shadcn skill if present.
+   Follow generated Next.js guidance (including `node_modules/next/dist/docs/` when
+   available). Fill the Design contract in `AGENTS.md` from the chosen direction.
+2. Tokens first: `src/styles/theme.css`, Tailwind v4 `@theme`, OKLCH, 1.25 type scale;
+   import it from `src/app/globals.css`. Use at most two self-hosted variable fonts
+   through `next/font`. For offline builds, use licensed local font files.
+3. Build section by section. Use Context7 or current official docs for Next.js,
+   Tailwind, GSAP, and Lenis. Use `useGSAP`, `gsap.matchMedia()`, reduced motion, and
+   one signature ScrollTrigger moment per page.
+   Read relevant installed GSAP skills: `gsap-core`, `gsap-react`, and
+   `gsap-scrolltrigger`; add timeline/performance/plugins/utils/framework guidance
+   when needed. For optional UX checks, read Bencium's `ACCESSIBILITY.md` and
+   `RESPONSIVE-DESIGN.md` from `$CODEX_HOME/pro-site/references/bencium`
+   (default `~/.codex/pro-site/references/bencium`) if present, or the original
+   `~/.claude/skills/bencium-controlled-ux-designer/` in Claude.
+4. Start `npm run dev -- --port 3100` in `P` (choose a free port). Keep its process
+   handle. After each section follow [design-review.md](references/design-review.md):
+   capture and **open** full/fold screenshots at 375/768/1440, inspect console and
+   keyboard behavior, apply concrete fixes. Up to three rounds per section, then
+   record unresolved issues. Codex can run `npm run review:capture -- <url> / /about`
+   without any browser MCP. A capture is not a design approval until images are read.
+5. Subtract pass: remove one unnecessary effect per section.
 
-## 6. Quality gates (Definition of done)
+## 5. Production quality gates
 
-Run on the **production** build, not the dev server:
+Run all commands in `P`. Use available process tools and stop only servers you started.
 
-1. `cd "$P" && npm run build`, then in the background `cd "$P" && npx next start -p 3200`.
-2. Lighthouse, mobile and desktop:
-   `cd "$P" && mkdir -p .lighthouse && npx -y lighthouse http://localhost:3200 --only-categories=performance,accessibility,best-practices,seo --chrome-flags="--headless=new" --output=json --output-path=./.lighthouse/mobile.json --quiet`
-   and the same with `--preset=desktop --output-path=./.lighthouse/desktop.json`. Read the category scores; target ≥ 95 for Performance and Accessibility. Fix, rebuild, re-run.
-3. Console: open each route with the chrome-devtools MCP and confirm zero errors (`list_console_messages`).
-4. Visual baselines: add every route to `tests/visual.spec.ts`, then `cd "$P" && npm run test:visual -- --update-snapshots` (the config builds and serves the site itself).
-5. Stop every server you started.
+1. Run the project's lint command and `npm run build`. Start `npm run start -- --port
+   3200` in the background, wait for readiness, then run
+   `npm run test:lighthouse -- http://localhost:3200` (Chrome required).
+   This saves mobile/desktop reports under `.lighthouse/` and fails if either
+   Performance or Accessibility is below 95. Fix, rebuild, restart, and retest.
+   After three rounds, report unresolved scores rather than claiming a pass.
+2. Capture every route against that production URL with `npm run review:capture --
+   http://localhost:3200 / /about`. Review images and `.review/results.json`.
+   Console errors, uncaught exceptions, HTTP failures, and overflow fail the command.
+3. Add every route to `tests/visual.spec.ts`. Create baselines with
+   `npm run test:visual -- --update-snapshots`, inspect them, then run
+   `npm run test:visual` without updating snapshots. This builds/serves its own
+   production instance on 3300 (`PW_PORT` overrides it) and checks console errors.
+4. Stop your dev and production processes. Report any unavailable browser, network,
+   credentials, or failed gate accurately. Do not treat missing tools as a pass.
 
-## 7. Hand-off
+## 6. Handoff
 
-`cd "$P" && git add -A && git commit -m "Build: <direction name>"`. Report briefly: the folder, the chosen direction, the Lighthouse scores, screenshot paths, how to run it (`cd ~/sites/<slug> && npm run dev`), and offer two next steps: deploy with the Vercel MCP, or open the project in its own session (`cd ~/sites/<slug> && claude`) for later edits.
+Review `git status`, stage only task-owned changes, and create a local commit when
+permitted. If git identity is missing, report it without changing global identity.
+Report the path, direction, actual scores, review/screenshot paths, and how to run it:
+`cd <project> && npm run dev`. For future edits open that folder with `codex` or
+`claude`. If deployment is already authorized (e.g. "upload all to Vercel"), deploy
+the requested variants to that provider after checks and report their URLs; do not
+ask for the same authorization again. Otherwise offer deployment. Provider login
+or access problems remain real blockers and must be reported.

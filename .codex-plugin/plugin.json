@@ -1,0 +1,23 @@
+{
+  "name": "pro-site",
+  "version": "1.4.0",
+  "description": "Build art-directed websites with a shared Claude Code and Codex workflow: design directions, Next.js scaffold, screenshot review, and production quality gates.",
+  "author": {
+    "name": "Mickey Alton"
+  },
+  "homepage": "https://github.com/MickeyAlton33/pro-site-cookbook",
+  "repository": "https://github.com/MickeyAlton33/pro-site-cookbook",
+  "license": "MIT",
+  "skills": "./skills/",
+  "hooks": "./hooks/codex.json",
+  "interface": {
+    "displayName": "Pro-site",
+    "shortDescription": "Art-directed websites, from brief to browser checks",
+    "developerName": "Mickey Alton",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Use Pro-site to build a new website for my business."
+    ]
+  },
+  "onboardingSkill": "./skills/pro-site-setup/SKILL.md"
+}

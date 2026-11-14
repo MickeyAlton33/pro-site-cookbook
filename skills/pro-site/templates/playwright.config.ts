@@ -11,7 +11,8 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    // Never accidentally validate an unrelated dev server on the same port.
+    reuseExistingServer: false,
     timeout: 240_000,
   },
   projects: [

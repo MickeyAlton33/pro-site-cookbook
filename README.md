@@ -1,58 +1,157 @@
 # pro-site-cookbook
 
-A Claude Code plugin + runbook for building art-directed websites **without doing any setup yourself**.
+A **Claude Code plugin and Codex plugin/skill** for building art-directed websites
+without doing the project setup yourself.
 
-Ask Claude for a brand-new site in any session and it asks one question:
+Ask for a new site or substantial redesign (including an existing URL) and choose
+**Pro-site** or **Regular (default)**. For a new project, Pro-site creates
+`~/sites/<name>` (or your chosen destination), scaffolds Next.js + Tailwind v4 +
+shadcn + GSAP + Playwright, and drives the workflow:
 
-> **How should I build this site?** — **Pro-site** or **Regular**
-
-- **Regular** — Claude builds it right where you are, the usual way.
-- **Pro-site** — Claude creates `~/sites/<name>`, scaffolds a Next.js + Tailwind v4 + shadcn + GSAP + Playwright project, and runs the whole pipeline itself:
-
+```text
+brief/source content → design directions (default 3, or your requested count)
+  → pick one, or build all if requested
+  → shared Design contract + OKLCH tokens → build section by section
+  → screenshot review at 375 / 768 / 1440 → fix and review
+  → production Lighthouse · console checks · visual regression
+  → local commit → offer deployment
 ```
-brief (only if missing) → 3 divergent directions → you pick one   ← the only checkpoint
-  → Design contract + OKLCH tokens → build section by section
-  → design-reviewer agent screenshots 375 / 768 / 1440 and critiques, fixes until APPROVED
-  → Lighthouse (mobile + desktop, production build) · zero console errors · Playwright visual baselines
-  → commit → offer Vercel deploy
+
+An existing mode/direction choice is respected. Regular uses the usual workflow.
+Small edits to existing sites, single components, and in-app UI skip the mode
+question. A substantial redesign still asks even inside an existing web project.
+“Wow,” 3D, animations, five options, and deployment instructions do not choose
+Pro-site for you. Explicitly choose a mode or answer the question first.
+
+## Codex
+
+Install from GitHub with a current Codex CLI:
+
+```bash
+codex plugin marketplace add MickeyAlton33/pro-site-cookbook
+codex plugin add pro-site@pro-site-cookbook
 ```
 
-It stays quiet for edits to existing projects, single components, and in-app UI.
+Then run the plugin's setup skill: `$pro-site:pro-site-setup Set up the Pro-site tool stack.`
 
-## Install
+Or install from a local checkout:
 
-1. Set up the tool stack once — see **[RUNBOOK.md](RUNBOOK.md)** (MCP servers, skills, sign-ins, gotchas).
-2. Install the plugin:
+```bash
+git clone https://github.com/MickeyAlton33/pro-site-cookbook.git
+cd pro-site-cookbook
+bash scripts/install-codex.sh
+```
+
+The local installer also configures Context7, Playwright, and Chrome DevTools for
+Codex and installs missing frontend-design and official GSAP skills. Account-backed
+services have separate setup/sign-in steps; see the full stack table below.
+
+Start a new Codex session and ask:
+
+```text
+$pro-site:pro-site Design a landing page for my coffee roastery.
+```
+
+The plugin includes a site-design detection hook for English and Hebrew, including
+URL redesigns and common “redesign” misspellings. Codex requires
+review/trust before running plugin hooks; the skill also works through explicit
+invocation or normal skill selection without the hook. For the IDE extension or
+clients without plugin support, use `bash scripts/install-codex.sh --skill` instead.
+Choose one installation method to avoid duplicate skills.
+
+See **[Codex setup and verification](docs/CODEX.md)** for MCPs, updates, project
+trust, standalone installs, and the full smoke test.
+
+### Full original stack in Codex
+
+| Original layer | Codex equivalent |
+|---|---|
+| frontend-design | Original Anthropic skill, installed for Codex |
+| GreenSock skills | All eight official GSAP skills, installed for Codex |
+| Context7, Playwright, Chrome DevTools | `setup-codex.sh core`; user-level MCPs, no provider sign-in |
+| Figma, Vercel, 21st | `setup-codex.sh accounts`, then separate Codex OAuth |
+| fal, Webflow, Framer | `setup-codex.sh project <path> <servers...>`; project-only, then provider setup/sign-in |
+| Bencium accessibility/responsive guidance | `setup-codex.sh bencium`; reference-only download with license |
+| shadcn | Project MCP + project skill from the scaffold |
+| Lighthouse and visual regression | Generated CLI scripts and Playwright tests |
+
+Here `setup-codex.sh` lives in `skills/pro-site/scripts/`. Configuration alone is not
+a connection test; Claude sign-ins are not copied into Codex. The setup skill reports
+which services still need authentication. Optional services are not used or billed
+just to verify installation.
+
+## Claude Code
+
+Set up optional tools using **[RUNBOOK.md](RUNBOOK.md)**, then:
 
 ```bash
 claude plugin marketplace add MickeyAlton33/pro-site-cookbook
 claude plugin install pro-site@pro-site-cookbook
 ```
 
-3. Restart Claude Code and ask for a site: *"Design a landing page for my coffee roastery."*
+Restart Claude Code and ask: “Design a landing page for my coffee roastery.”
+The existing Claude hook and `pro-site:design-reviewer` agent remain available.
 
-## What's inside
+## Shared project workflow
 
+```bash
+# Direct scaffold; omit --agent to preserve the original Claude default.
+bash skills/pro-site/scripts/new-site.sh --agent codex ~/sites/coffee-roastery
+# --agent both configures both clients.
 ```
-.claude-plugin/          plugin.json + marketplace.json
+
+Every project gets one **`AGENTS.md` Design contract** and a `CLAUDE.md` that imports
+it. Generated Next.js instructions are preserved. The contract covers OKLCH tokens,
+two self-hosted variable fonts, a 1.25 type scale, a 12-column grid, reduced motion,
+one signature ScrollTrigger moment, shadcn composition, and the original design bans.
+
+Codex receives project-local `.codex/config.toml` entries for shadcn, Context7, and
+Playwright. Claude receives its shadcn `.mcp.json`. Neither scaffold changes Codex's
+user configuration. Browser MCPs are optional: generated CLI scripts capture review
+images, check console errors, run Lighthouse, and verify visual baselines.
+
+| Project command | Purpose |
+|---|---|
+| `npm run dev` | Develop the site |
+| `npm run review:capture -- http://localhost:3100 / /about` | Full/fold images at three widths; HTTP, overflow, and console checks |
+| `npm run build` then `npm run start -- --port 3200` | Serve production output |
+| `npm run test:lighthouse -- http://localhost:3200` | Mobile/desktop reports; fails below 95 Performance or Accessibility |
+| `npm run test:visual -- --update-snapshots` | Create baselines for routes in `tests/visual.spec.ts` |
+| `npm run test:visual` | Verify reviewed baselines against its own production server |
+
+Screenshot capture is followed by actual image inspection, using an available
+reviewer or an explicitly identified self-review. Missing tools and failed quality
+gates are reported; they are never treated as a pass. Deployment is offered after
+local validation and happens only when authorized.
+
+## Repository layout
+
+```text
+.claude-plugin/              Claude plugin and marketplace
+.codex-plugin/              Codex plugin manifest
+.agents/plugins/            Codex marketplace
+hooks/                      Shared detector, client-specific hook definitions
 skills/pro-site/
-  SKILL.md               trigger, mode question, the full Pro-site pipeline
-  scripts/new-site.sh    scaffold (create-next-app 16 · shadcn · GSAP/Lenis · Playwright · CLAUDE.md)
-  scripts/add-mcp.sh     per-project MCPs: 21st, fal, webflow, framer (OAuth)
-  templates/CLAUDE.md    the Design contract + workflow + Definition of done
-  templates/playwright.config.ts, visual.spec.ts   visual regression at the 3 review widths
-hooks/detect-new-site.mjs   UserPromptSubmit hook: spots new-site requests (EN + HE) and starts pro-site first
-agents/design-reviewer.md   art-director subagent (pro-site:design-reviewer); approves from screenshots only
-RUNBOOK.md               the environment setup, with every command verified
+  SKILL.md                  Shared workflow, client tool mapping
+  agents/openai.yaml        Codex skill metadata
+  references/design-review.md
+  scripts/                  Scaffold and project MCP setup
+  templates/                AGENTS.md, CLAUDE.md, browser/Lighthouse checks
+agents/design-reviewer.md    Claude reviewer
+scripts/install-codex.sh     Plugin or standalone skill installation
+tests/                     Offline integration/regression tests
 ```
 
-## The Design contract
+## Requirements and checks
 
-Every Pro-site project gets a `CLAUDE.md` that Claude treats as binding: tokens only from `theme.css` (Tailwind v4 `@theme`, OKLCH), max two self-hosted variable fonts on a 1.25 scale, a 12-column grid, GSAP only with one signature ScrollTrigger moment and `prefers-reduced-motion` respected, shadcn primitives with custom composition — and a ban list (purple-blue gradients, glassmorphism cards, emoji icons, "Trusted by" logo strips, stock 3D blobs, Inter as display).
+macOS or Linux; Node **>=22.19** (a current LTS is recommended), npm, git, Claude Code
+or Codex, internet for dependencies, and ~3 GB disk per site. Lighthouse needs Chrome
+or `CHROME_PATH`; Playwright downloads its own Chromium. Linux may also need
+`npx playwright install --with-deps chromium`.
 
-## Requirements
-
-macOS or Linux, Node ≥ 20, git, Chrome, Claude Code, ~3 GB free disk per site.
+Run repository checks with `node --test tests/*.test.mjs`. CI exercises the shared
+scaffold and both client paths on Linux and macOS using isolated command fixtures.
+The real scaffold/build/browser smoke procedure is in [docs/CODEX.md](docs/CODEX.md).
 
 ## License
 
