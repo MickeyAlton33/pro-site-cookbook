@@ -7,6 +7,8 @@ case "${1:-}" in
     command -v codex >/dev/null || { echo 'Install Codex first, or use --skill for standalone discovery.' >&2; exit 1; }
     codex plugin marketplace add "$ROOT"
     codex plugin add pro-site@pro-site-cookbook
+    bash "$ROOT/skills/pro-site/scripts/setup-codex.sh" core
+    bash "$ROOT/skills/pro-site/scripts/setup-codex.sh" skills
     echo 'Installed. Start a new Codex session and use $pro-site:pro-site. Review/trust the optional detection hook in Codex to enable it.'
     ;;
   --skill)

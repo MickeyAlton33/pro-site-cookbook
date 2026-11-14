@@ -121,3 +121,25 @@ test('invalid scaffold options create no destination', (t) => {
   assert.equal(existsSync(site), false);
   assert.notEqual(run('bash', [script('new-site.sh'), '--agent'], dir).status, 0);
 });
+
+test('full-stack setup separates global core/accounts from project-only services', (t) => {
+  const dir = temp(t), configHome = join(dir, 'codex-home'), project = join(dir, 'project');
+  const env = { CODEX_HOME: configHome };
+  const helper = script('setup-codex.sh');
+  mkdirSync(project);
+  ok(run('bash', [helper, 'core'], dir, env));
+  ok(run('bash', [helper, 'accounts'], dir, env));
+  const globalFile = join(configHome, 'config.toml');
+  const globalConfig = readFileSync(globalFile, 'utf8');
+  for (const name of ['context7', 'playwright', 'chrome-devtools', 'figma', 'vercel', '21st']) assert.ok(globalConfig.includes(`[mcp_servers."${name}"]`));
+  for (const name of ['fal', 'webflow', 'framer']) assert.ok(!globalConfig.includes(`[mcp_servers."${name}"]`));
+  ok(run('bash', [helper, 'core'], dir, env));
+  ok(run('bash', [helper, 'accounts'], dir, env));
+  assert.equal(readFileSync(globalFile, 'utf8'), globalConfig);
+  ok(run('bash', [helper, 'project', project, 'fal', 'webflow', 'framer'], dir, env));
+  assert.equal(readFileSync(globalFile, 'utf8'), globalConfig);
+  const projectConfig = readFileSync(join(project, '.codex/config.toml'), 'utf8');
+  for (const name of ['fal', 'webflow', 'framer']) assert.ok(projectConfig.includes(`[mcp_servers."${name}"]`));
+  assert.notEqual(run('bash', [helper, 'project', join(dir, 'missing'), 'fal'], dir, env).status, 0);
+  assert.equal(existsSync(join(dir, 'missing')), false);
+});

@@ -41,6 +41,12 @@ explain that constraint and resolve it before running the script.
 
 ## 2. Scaffold and brief
 
+In Codex, ensure the one-time stack is present: run
+`bash "<base>/scripts/setup-codex.sh" core` and
+`bash "<base>/scripts/setup-codex.sh" skills` if not already set up. These preserve
+existing definitions and skills. Do not authenticate optional services merely to
+build a local site. For full-stack setup/repair, use `pro-site-setup` if available.
+
 Use the user's destination, otherwise `~/sites/<slug>` (1–3 kebab-case words).
 If it exists, pick `-2`, `-3`, etc.; never overwrite it. Run:
 
@@ -56,6 +62,9 @@ The script needs Node >=22.19 and ~3 GB free disk. On failure, inspect the parti
 project and finish the failed steps; rerunning over it is deliberately refused.
 
 ## 3. Three directions
+
+Read the installed `frontend-design` skill for the taste layer. Keep the user's
+chosen direction and this project's OKLCH contract when applying its guidance.
 
 Propose three divergent directions: name, mood, self-hostable display/text fonts
 (never Inter as display), 3–5 OKLCH colors, layout sketch, and one signature motion
@@ -77,6 +86,12 @@ Let `P` be the absolute project path. Check scaffold completion, then:
 3. Build section by section. Use Context7 or current official docs for Next.js,
    Tailwind, GSAP, and Lenis. Use `useGSAP`, `gsap.matchMedia()`, reduced motion, and
    one signature ScrollTrigger moment per page.
+   Read relevant installed GSAP skills: `gsap-core`, `gsap-react`, and
+   `gsap-scrolltrigger`; add timeline/performance/plugins/utils/framework guidance
+   when needed. For optional UX checks, read Bencium's `ACCESSIBILITY.md` and
+   `RESPONSIVE-DESIGN.md` from `$CODEX_HOME/pro-site/references/bencium`
+   (default `~/.codex/pro-site/references/bencium`) if present, or the original
+   `~/.claude/skills/bencium-controlled-ux-designer/` in Claude.
 4. Start `npm run dev -- --port 3100` in `P` (choose a free port). Keep its process
    handle. After each section follow [design-review.md](references/design-review.md):
    capture and **open** full/fold screenshots at 375/768/1440, inspect console and

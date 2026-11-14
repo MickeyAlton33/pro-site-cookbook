@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Project-only MCP setup. Never writes user config or stores OAuth tokens.
+// Project scope by default. User scope must be selected explicitly. No OAuth tokens.
 import { existsSync, mkdirSync, readFileSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
+import { homedir } from "node:os";
 
 const servers = {
   shadcn: { command: "npx", args: ["-y", "shadcn@4", "mcp"] },
@@ -16,12 +17,16 @@ const servers = {
   framer: { url: "https://mcp.framer.com/mcp" },
 };
 
-const names = [...new Set(process.argv.slice(2))];
+const args = process.argv.slice(2);
+let scope = "project";
+if (args[0] === "--scope") { args.shift(); scope = args.shift(); }
+if (!["project", "user"].includes(scope)) { console.error("Expected --scope project|user"); process.exit(2); }
+const names = [...new Set(args)];
 if (!names.length || names.some((name) => !Object.hasOwn(servers, name))) {
   console.error(`usage: codex-mcp.mjs ${Object.keys(servers).join("|")} [...]`);
   process.exit(2);
 }
-const dir = join(process.cwd(), ".codex");
+const dir = scope === "user" ? (process.env.CODEX_HOME || join(homedir(), ".codex")) : join(process.cwd(), ".codex");
 const file = join(dir, "config.toml");
 const existing = existsSync(file) ? readFileSync(file, "utf8") : "";
 // A hand-written inline mcp_servers table needs a TOML-aware manual merge.
@@ -44,4 +49,4 @@ if (additions) {
   mkdirSync(dir, { recursive: true });
   appendFileSync(file, additions);
 }
-console.log(`Codex project MCPs ready in ${file}. Start a new session in this trusted project.`);
+console.log(`Codex ${scope} MCP definitions ready in ${file}. Start a new session; project config requires project trust. HTTP services still need separate authentication.`);

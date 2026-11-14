@@ -2,6 +2,11 @@
 
 For Codex installation, MCPs, and end-to-end verification, see [docs/CODEX.md](docs/CODEX.md). Both clients share the same design pipeline.
 
+The Codex runbook maps every layer below: frontend-design, the eight GSAP skills,
+Context7, both browser MCPs, Figma, Vercel, 21st, project-only fal/Webflow/Framer,
+optional Bencium references, and the production quality tools. Account sign-ins
+are separate for each client.
+
 One-time environment setup. Every command was run and verified on 2026-11-14 (Claude Code 2.1.325, Node 26, macOS). Where the vendor's current docs disagreed with older guides, the vendor wins and the difference is noted.
 
 > **Sign-ins:** `claude mcp login <name>` needs a real terminal (it fails inside a Claude session with "stdin isn't a terminal"). Alternative: `/mcp` → server → *Authenticate* in an interactive session. All servers below support OAuth, so SSO accounts work — no API keys needed.

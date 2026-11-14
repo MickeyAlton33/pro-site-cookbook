@@ -27,6 +27,8 @@ codex plugin marketplace add MickeyAlton33/pro-site-cookbook
 codex plugin add pro-site@pro-site-cookbook
 ```
 
+Then run the plugin's setup skill: `$pro-site:pro-site-setup Set up the Pro-site tool stack.`
+
 Or install from a local checkout:
 
 ```bash
@@ -34,6 +36,10 @@ git clone https://github.com/MickeyAlton33/pro-site-cookbook.git
 cd pro-site-cookbook
 bash scripts/install-codex.sh
 ```
+
+The local installer also configures Context7, Playwright, and Chrome DevTools for
+Codex and installs missing frontend-design and official GSAP skills. Account-backed
+services have separate setup/sign-in steps; see the full stack table below.
 
 Start a new Codex session and ask:
 
@@ -49,6 +55,24 @@ Choose one installation method to avoid duplicate skills.
 
 See **[Codex setup and verification](docs/CODEX.md)** for MCPs, updates, project
 trust, standalone installs, and the full smoke test.
+
+### Full original stack in Codex
+
+| Original layer | Codex equivalent |
+|---|---|
+| frontend-design | Original Anthropic skill, installed for Codex |
+| GreenSock skills | All eight official GSAP skills, installed for Codex |
+| Context7, Playwright, Chrome DevTools | `setup-codex.sh core`; user-level MCPs, no provider sign-in |
+| Figma, Vercel, 21st | `setup-codex.sh accounts`, then separate Codex OAuth |
+| fal, Webflow, Framer | `setup-codex.sh project <path> <servers...>`; project-only, then provider setup/sign-in |
+| Bencium accessibility/responsive guidance | `setup-codex.sh bencium`; reference-only download with license |
+| shadcn | Project MCP + project skill from the scaffold |
+| Lighthouse and visual regression | Generated CLI scripts and Playwright tests |
+
+Here `setup-codex.sh` lives in `skills/pro-site/scripts/`. Configuration alone is not
+a connection test; Claude sign-ins are not copied into Codex. The setup skill reports
+which services still need authentication. Optional services are not used or billed
+just to verify installation.
 
 ## Claude Code
 
