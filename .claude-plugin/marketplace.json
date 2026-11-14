@@ -1,0 +1,18 @@
+{
+  "name": "pro-site-cookbook",
+  "description": "Pro website design stack for Claude Code: auto Regular/Pro-site mode, self-scaffolding Next.js + shadcn + GSAP projects, design-reviewer agent, quality gates.",
+  "owner": { "name": "Mickey Alton" },
+  "plugins": [
+    {
+      "name": "pro-site",
+      "source": "./",
+      "description": "Ask once 'Regular or Pro-site?' for new websites; Pro-site scaffolds and runs the full art-directed pipeline itself.",
+      "version": "1.0.0",
+      "author": { "name": "Mickey Alton" },
+      "homepage": "https://github.com/MickeyAlton33/pro-site-cookbook",
+      "repository": "https://github.com/MickeyAlton33/pro-site-cookbook",
+      "license": "MIT",
+      "keywords": ["web-design", "nextjs", "tailwind", "shadcn", "gsap", "playwright", "lighthouse", "claude-code"]
+    }
+  ]
+}

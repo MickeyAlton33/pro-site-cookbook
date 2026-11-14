@@ -1,0 +1,11 @@
+{
+  "name": "pro-site",
+  "description": "Ask once 'Regular or Pro-site?' when a brand-new website is requested; Pro-site scaffolds the project itself and runs an art-directed pipeline (3 directions, build, screenshot review at 375/768/1440, Lighthouse + visual-regression gates).",
+  "version": "1.0.0",
+  "author": { "name": "Mickey Alton" },
+  "homepage": "https://github.com/MickeyAlton33/pro-site-cookbook",
+  "repository": "https://github.com/MickeyAlton33/pro-site-cookbook",
+  "license": "MIT",
+  "skills": "./skills/",
+  "agents": ["./agents/design-reviewer.md"]
+}
