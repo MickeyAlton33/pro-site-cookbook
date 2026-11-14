@@ -41,7 +41,8 @@ skills/pro-site/
   scripts/add-mcp.sh     per-project MCPs: 21st, fal, webflow, framer (OAuth)
   templates/CLAUDE.md    the Design contract + workflow + Definition of done
   templates/playwright.config.ts, visual.spec.ts   visual regression at the 3 review widths
-agents/design-reviewer.md   art-director subagent; approves from screenshots only
+hooks/detect-new-site.mjs   UserPromptSubmit hook: spots new-site requests (EN + HE) and starts pro-site first
+agents/design-reviewer.md   art-director subagent (pro-site:design-reviewer); approves from screenshots only
 RUNBOOK.md               the environment setup, with every command verified
 ```
 

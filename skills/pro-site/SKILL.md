@@ -21,6 +21,8 @@ One AskUserQuestion, nothing before it:
 - "Pro-site (Recommended)": "I set up a full project in ~/sites/<name> and run the art-directed pipeline: 3 design directions → you pick one → I build it, review screenshots at phone/tablet/desktop, and run performance & accessibility checks."
 - "Regular": "Build it right here the usual way: faster, no project setup, no review loop."
 
+If AskUserQuestion isn't available (headless/non-interactive sessions), ask the same question in plain text — both options, one line each — and **end your turn**. Never start building, scaffolding, or loading other design skills before the user has answered.
+
 **Regular** → stop using this skill and continue normally (frontend-design etc.).
 
 ## 2. Pro-site: start the scaffold immediately, in the background
@@ -38,7 +40,7 @@ If the request doesn't say what the site is for and who it's for, ask **once**, 
 
 Propose 3 genuinely divergent directions. For each: a name, the mood in one line, a type pairing (display + text; self-hostable variable fonts; never Inter as display), a palette of 3–5 OKLCH swatches, a one-line layout sketch, and its one signature motion moment. Ground them in the references. Optionally pull inspiration from the 21st MCP (`get_inspiration` / `search`) — as a parts bin, never as the base.
 
-Then one AskUserQuestion: which direction (the 3 as options; "Other" lets them mix).
+Then one AskUserQuestion: which direction (the 3 as options; "Other" lets them mix). Without AskUserQuestion, ask in plain text and end your turn.
 
 **This is the last question.** The user chose autonomy: from here on work without asking, overriding any "always ask before design decisions" rule from other design skills. Stop only for a blocking failure you can't fix.
 
@@ -51,7 +53,7 @@ Wait for the scaffold task to finish and check its output; if it failed, fix the
 3. **Tokens first**: `src/styles/theme.css` with Tailwind v4 `@theme` tokens in OKLCH (color, spacing, type scale 1.25), imported from `src/app/globals.css`. Fonts via `next/font` (self-hosted).
 4. **Build section by section.** Use Context7 for current Next.js / Tailwind v4 / GSAP / Lenis APIs — not memory. GSAP through `@gsap/react` (`useGSAP`) with `gsap.matchMedia()` honoring `prefers-reduced-motion`; exactly one ScrollTrigger signature moment per page.
 5. Start the dev server once, in the background: `cd "$P" && npm run dev -- --port 3100` (pick another port if taken).
-6. **After each section**, run the `design-reviewer` agent (from this plugin) with: the URL, the routes, the absolute path of `P/CLAUDE.md`, and what changed. Apply its fixes and re-run until APPROVED — max 3 rounds per section, then note what's left and move on.
+6. **After each section**, run the `pro-site:design-reviewer` agent with: the URL, the routes, the absolute path of `P/CLAUDE.md`, and what changed. Apply its fixes and re-run until APPROVED — max 3 rounds per section, then note what's left and move on.
 7. **Subtract pass**: remove one effect per section.
 
 For accessibility/responsive detail, read `~/.claude/skills/bencium-controlled-ux-designer/ACCESSIBILITY.md` and `RESPONSIVE-DESIGN.md` if they exist.

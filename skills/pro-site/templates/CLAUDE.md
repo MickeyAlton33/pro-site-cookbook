@@ -13,7 +13,7 @@
 ## Workflow rules
 1. Before any code on a new page: propose 3 divergent directions (mood, type pairing, layout sketch). Wait for my pick.
 2. Tokens first (theme.css), then build section by section.
-3. After each section: run the `design-reviewer` subagent and apply its fixes until APPROVED.
+3. After each section: run the `pro-site:design-reviewer` subagent and apply its fixes until APPROVED.
 4. Final "subtract" pass: remove one effect per section.
 5. Use Context7 for current Next.js / Tailwind v4 / Motion / R3F APIs — don't rely on memory.
 
