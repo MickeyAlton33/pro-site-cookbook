@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pro-site"
+  short_description: "Art-directed websites with production quality gates"
+  default_prompt: "Use $pro-site to build a new website for my business."

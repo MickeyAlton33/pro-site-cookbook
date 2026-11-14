@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/detect-new-site.mjs\" --client codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

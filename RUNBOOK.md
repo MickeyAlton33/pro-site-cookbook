@@ -1,4 +1,6 @@
-# Runbook — Pro website design stack for Claude Code
+# Runbook — Claude Code setup
+
+For Codex installation, MCPs, and end-to-end verification, see [docs/CODEX.md](docs/CODEX.md). Both clients share the same design pipeline.
 
 One-time environment setup. Every command was run and verified on 2026-11-14 (Claude Code 2.1.325, Node 26, macOS). Where the vendor's current docs disagreed with older guides, the vendor wins and the difference is noted.
 
@@ -7,7 +9,7 @@ One-time environment setup. Every command was run and verified on 2026-11-14 (Cl
 ## Phase 0 — Preflight
 
 ```bash
-claude --version; node -v; npm -v; git --version   # Node must be ≥ 20
+claude --version; node -v; npm -v; git --version   # Node must be ≥ 22.19
 df -h ~                                            # keep several GB free — a full disk breaks downloads (ENOSPC)
 claude plugin marketplace list                     # needs claude-plugins-official
 # if missing: claude plugin marketplace add anthropics/claude-plugins-official
@@ -118,7 +120,7 @@ Then in a new session: *"Design a landing page for <something>."* → you should
 ## Gotchas collected while building this
 
 - **create-next-app 16** dropped `--no-import-alias`; shadcn needs `@/*` anyway. Use `--import-alias "@/*" --yes`.
-- **Next.js 16 writes `AGENTS.md`**, not `CLAUDE.md`. The scaffold appends `@AGENTS.md` to `CLAUDE.md` so Claude still loads Next's rules.
+- **Next.js 16 writes `AGENTS.md`**, not `CLAUDE.md`. The scaffold preserves those rules in `AGENTS.md`, prepends the shared Design contract, and imports it from `CLAUDE.md`.
 - **`npx skills add shadcn/ui`** is interactive; non-interactive form: `--skill shadcn --agent claude-code --yes`.
 - **shadcn 4.x installs a `cn` package** (by shadcn, `shadcn-ui/cn`) instead of `clsx` + `tailwind-merge` — expected.
 - **Subagent `tools:`** needs `mcp__<server>__*`; a bare `mcp__<server>` grants nothing and can stop the agent from launching.

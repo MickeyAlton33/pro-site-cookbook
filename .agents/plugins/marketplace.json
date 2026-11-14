@@ -1,0 +1,12 @@
+{
+  "name": "pro-site-cookbook",
+  "interface": { "displayName": "Pro-site Cookbook" },
+  "plugins": [
+    {
+      "name": "pro-site",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_USE" },
+      "category": "Productivity"
+    }
+  ]
+}
