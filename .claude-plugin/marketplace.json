@@ -8,8 +8,8 @@
     {
       "name": "pro-site",
       "source": "./",
-      "description": "Ask once 'Regular or Pro-site?' for new websites; Pro-site scaffolds and runs the full art-directed pipeline itself.",
-      "version": "1.3.0",
+      "description": "Ask Regular/default or Pro-site for new websites or substantial redesigns, then run the requested design/build/review workflow.",
+      "version": "1.4.0",
       "author": {
         "name": "Mickey Alton"
       },

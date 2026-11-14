@@ -111,7 +111,7 @@ for (const client of ['claude', 'codex']) {
     for (const prompt of ['Audit website security', 'Build a scraper for a website', 'Create one button', '/pro-site', '']) assert.equal(hook(prompt).stdout, '');
     for (const raw of ['not json', 'null', '[]', '42']) { const result = hook('', raw); ok(result); assert.equal(result.stdout, ''); }
     writeFileSync(join(dir, 'package.json'), JSON.stringify({ dependencies: { next: '16' } }));
-    assert.equal(hook('Redesign the website').stdout, '');
+    assert.equal(hook('Fix the website footer').stdout, '');
   });
 }
 

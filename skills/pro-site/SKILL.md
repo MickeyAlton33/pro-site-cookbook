@@ -1,11 +1,11 @@
 ---
 name: pro-site
-description: Build a brand-new art-directed website, landing page, homepage, portfolio, or marketing site with Claude Code or Codex. Offers Regular or Pro-site mode; Pro-site scaffolds Next.js, shadcn, GSAP, and Playwright, proposes three directions, then builds and checks screenshots and production quality. Not for edits to existing sites, individual components, in-app dashboards, or throwaway pages.
+description: Ask Regular/default or Pro-site before building a new website or substantially redesigning an existing site or live URL, including requests to capture content and make multiple animated/3D design options. Pro-site runs the design, build, screenshot-review, and production-quality workflow in Claude Code or Codex. Excludes small fixes, individual components, in-app dashboards, and content-extraction-only tasks.
 ---
 
 # Pro-site
 
-Use this workflow before other design skills for a matching new-site request. Preserve
+Use this workflow before other design skills for a new-site or substantial redesign request. Preserve
 explicit choices of mode, destination, stack, and deployment target. `<base>` is the
 directory containing this `SKILL.md`; resolve scripts and references relative to it.
 Do not assume a Claude plugin root or a particular home directory.
@@ -27,15 +27,25 @@ session starts. Never call a Claude-only tool from Codex.
 
 ## 1. Scope and mode
 
-For an existing web project or an edit, continue normally without a mode question.
-For a new site, ask once: **How should I build this site?**
+For small edits, bug fixes, individual components, extraction/analysis without
+design work, or quoted design examples in a troubleshooting/setup task, continue
+normally. For a new site or substantial site/landing-page
+redesign, **including an existing URL or project**, ask once before fetching source
+content, scaffolding, or starting design work:
 
-- **Pro-site (Recommended)** — create a full project, choose among three design
-  directions, then build, review phone/tablet/desktop screenshots, and run quality gates.
+**How should I build this site — Regular (default) or Pro-site?**
+
+- **Pro-site (Recommended)** — use the art-directed workflow: design directions,
+  build, phone/tablet/desktop screenshot review, and production quality gates.
 - **Regular** — build in the current workspace using the usual workflow.
 
-Skip the question if the user already chose a mode. If no question tool is available,
-ask in plain text and end the turn; do not scaffold while a required choice is pending.
+Skip the question only if the user explicitly chose Regular/default or Pro-site for
+this task, including a choice in an earlier turn. Invoking this skill by name,
+requesting a "wow"/professional site, 3D, animations, five options, or Vercel deployment
+does **not** choose a mode. Do not silently choose Pro-site from the requested polish.
+If no suitable question tool is available, ask in plain text and end the turn. If
+the host offers an asynchronous question tool, leave dependent work pending until
+the answer arrives. Do not treat a missing answer as authorization to choose.
 Regular ends this workflow. If the requested stack conflicts with the Next.js scaffold,
 explain that constraint and resolve it before running the script.
 
@@ -47,7 +57,14 @@ In Codex, ensure the one-time stack is present: run
 existing definitions and skills. Do not authenticate optional services merely to
 build a local site. For full-stack setup/repair, use `pro-site-setup` if available.
 
-Use the user's destination, otherwise `~/sites/<slug>` (1–3 kebab-case words).
+For a redesign, capture the supplied site's content and relevant assets after the
+mode choice, preserving the brief's content and credit/source URLs. If the user
+wants the existing project redesigned in place, inspect it and use its stack;
+skip the new-project scaffold, preserve its instructions, and adapt the review/gates
+to it. Do not overwrite an existing contract or source tree.
+
+For a new project or separate redesign variants, use the user's destination,
+otherwise `~/sites/<slug>` (1–3 kebab-case words).
 If it exists, pick `-2`, `-3`, etc.; never overwrite it. Run:
 
 ```bash
@@ -61,21 +78,28 @@ purpose/audience, references (or “surprise me”), and must-have content.
 The script needs Node >=22.19 and ~3 GB free disk. On failure, inspect the partial
 project and finish the failed steps; rerunning over it is deliberately refused.
 
-## 3. Three directions
+## 3. Design directions and requested variants
 
 Read the installed `frontend-design` skill for the taste layer. Keep the user's
 chosen direction and this project's OKLCH contract when applying its guidance.
 
-Propose three divergent directions: name, mood, self-hostable display/text fonts
+Default to three divergent directions, or use the user's requested count (e.g. at
+least five means five or more, never three). For each: name, mood, self-hostable display/text fonts
 (never Inter as display), 3–5 OKLCH colors, layout sketch, and one signature motion
 moment. Ground them in the brief. Optional inspiration tools are a parts bin.
-Ask for a choice or mix and wait. Reuse an explicit prior direction instead of asking
-again. After the choice, proceed autonomously within the authorized task; ask only
+For a single final design, ask for a choice or mix and wait. If the user explicitly
+asks to build/deploy **all** options, build all of the requested variants after the
+mode choice; do not require a single winner. Reuse an explicit prior direction.
+Preserve requests for 3D and motion; choose appropriate libraries such as Three.js
+or R3F when needed and apply the same accessibility/performance gates. Cookbook
+defaults do not prohibit an explicitly requested technique.
+Proceed autonomously within the authorized task after the required choice; ask only
 for missing information that blocks progress or actions requiring new authorization.
 
 ## 4. Build and review
 
-Let `P` be the absolute project path. Check scaffold completion, then:
+Let `P` be the absolute project path. Check scaffold completion (or the existing
+project for an in-place redesign), then apply the following to each requested variant:
 
 1. Read `P/AGENTS.md`, `P/CLAUDE.md`, and the runtime's project shadcn skill if present.
    Follow generated Next.js guidance (including `node_modules/next/dist/docs/` when
@@ -126,5 +150,7 @@ Review `git status`, stage only task-owned changes, and create a local commit wh
 permitted. If git identity is missing, report it without changing global identity.
 Report the path, direction, actual scores, review/screenshot paths, and how to run it:
 `cd <project> && npm run dev`. For future edits open that folder with `codex` or
-`claude`. Offer deployment through an available provider; deploy only if the user
-has authorized it. Preserve an explicit provider choice.
+`claude`. If deployment is already authorized (e.g. "upload all to Vercel"), deploy
+the requested variants to that provider after checks and report their URLs; do not
+ask for the same authorization again. Otherwise offer deployment. Provider login
+or access problems remain real blockers and must be reported.

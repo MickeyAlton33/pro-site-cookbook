@@ -48,16 +48,34 @@ uninstall. No global `AGENTS.md`, model, permissions, or unrelated MCPs are chan
 
 ## Use
 
-In a new session outside an existing web project:
+In a session with the updated skill loaded:
 
 ```text
 $pro-site:pro-site Design a landing page for my coffee roastery.
 ```
 
-Expect the mode question, then three directions after choosing Pro-site. You can
+Expect the mode question, then three directions by default after choosing Pro-site. You can
 preselect: “Use Pro-site for a coffee roastery site at /my/path.” An existing mode,
 brief, or direction is reused. Without a question UI, the agent asks in plain text
-and waits. Edits inside an existing site proceed directly.
+and waits. Small edits inside an existing site proceed directly; a substantial
+redesign still triggers the mode question. For example:
+
+```text
+Redesign https://supernatural.sh/. Capture its content, build at least five
+engineering-themed options with 3D and animations, then upload all to Vercel.
+```
+
+This asks **Regular (default) or Pro-site** before source capture or scaffolding.
+It does not infer Pro-site from the requested polish. After you choose, it preserves
+the five-option count and deployment authorization. “Build all” skips the usual
+single-direction selection checkpoint. An existing project is reused when an
+in-place redesign is requested; it is never overwritten by the new-site scaffold.
+
+The hook recognizes URLs, common redesign typos, and content-capture-plus-redesign
+requests. It remains silent for extraction alone, small component edits, and site
+security checks. A trusted hook gives a stronger mode-checkpoint hint than implicit
+skill selection alone; installing a skill does not make every model response
+deterministic. Updated hook content may require a fresh trust review in Codex.
 
 The agent runs `new-site.sh --agent codex <path>`. `--agent both` wires both clients;
 no option retains the original Claude default. `AGENTS.md` is the single editable
@@ -190,7 +208,10 @@ bash -n scripts/install-codex.sh skills/pro-site/scripts/*.sh
 
 Offline tests cover client selection, paths with spaces, preserved framework and
 Claude instructions, safe repeated MCP setup, refusal of existing destinations,
-installer conflicts, English/Hebrew hooks, and no global Codex config writes.
+installer conflicts, English/Hebrew hooks, and explicit global/project MCP scopes.
+Trigger regression cases include the reported typo-filled Supernatural prompt,
+both inside and outside a web project, with negative extraction/component/security
+cases for both clients.
 
 Test packaging without changing your user setup:
 

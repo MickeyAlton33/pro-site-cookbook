@@ -3,12 +3,14 @@
 A **Claude Code plugin and Codex plugin/skill** for building art-directed websites
 without doing the project setup yourself.
 
-Ask for a brand-new site and choose **Pro-site** or **Regular**. Pro-site creates
+Ask for a new site or substantial redesign (including an existing URL) and choose
+**Pro-site** or **Regular (default)**. For a new project, Pro-site creates
 `~/sites/<name>` (or your chosen destination), scaffolds Next.js + Tailwind v4 +
 shadcn + GSAP + Playwright, and drives the workflow:
 
 ```text
-brief → three directions → you pick one
+brief/source content → design directions (default 3, or your requested count)
+  → pick one, or build all if requested
   → shared Design contract + OKLCH tokens → build section by section
   → screenshot review at 375 / 768 / 1440 → fix and review
   → production Lighthouse · console checks · visual regression
@@ -16,7 +18,10 @@ brief → three directions → you pick one
 ```
 
 An existing mode/direction choice is respected. Regular uses the usual workflow.
-Edits to existing sites, single components, and in-app UI skip the mode question.
+Small edits to existing sites, single components, and in-app UI skip the mode
+question. A substantial redesign still asks even inside an existing web project.
+“Wow,” 3D, animations, five options, and deployment instructions do not choose
+Pro-site for you. Explicitly choose a mode or answer the question first.
 
 ## Codex
 
@@ -47,7 +52,8 @@ Start a new Codex session and ask:
 $pro-site:pro-site Design a landing page for my coffee roastery.
 ```
 
-The plugin includes a new-site detection hook for English and Hebrew. Codex requires
+The plugin includes a site-design detection hook for English and Hebrew, including
+URL redesigns and common “redesign” misspellings. Codex requires
 review/trust before running plugin hooks; the skill also works through explicit
 invocation or normal skill selection without the hook. For the IDE extension or
 clients without plugin support, use `bash scripts/install-codex.sh --skill` instead.
